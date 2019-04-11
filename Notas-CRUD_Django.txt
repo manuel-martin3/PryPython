@@ -1,0 +1,543 @@
+:::::::::::: python 3.7.2  y  Django 2.2 :::::::::::::
+######################################################
+
+0. 	instalar el gestor de paquete PIP
+	:::  copiar el archivo "get-pip.py", en un directorio para luego ("D:\>python get-pip.py") ejecutarlo desde el CMD
+
+1.  crear directorio(D:\proyDjango>)
+2.  pip install virtualenv
+3.  virtualenv crud_django
+4.  D:\proyDjango>cd crud_django
+5.  D:\proyDjango\crud_django>cd Scripts
+6.  D:\proyDjango\crud_django\Scripts>activate
+		(crud_django) D:\proyDjango\crud_django\Scripts>
+7.  (crud_django) D:\proyDjango\crud_django\Scripts>pip freeze
+8.  (crud_django) D:\proyDjango\crud_django\Scripts>pip install django
+
+9.  (crud_django) D:\proyDjango\crud_django\Scripts>pip install django-mysql
+		::::: Instalar  en ruta de instalacion de python
+10. (crud_django) D:\proyDjango\crud_django\Scripts>pip install D:\mysqlclient-1.4.2-cp37-cp37m-win32.whl
+		::::: Luego instalar el cliente
+
+11. (crud_django) D:\proyDjango\crud_django\Scripts>cd..
+12. (crud_django) D:\proyDjango\crud_django>cd ..
+13. (crud_django) D:\proyDjango>django-admin startproject crud
+		::::: para crear la estructura en el proyecto :::::
+14. denttro de ../crud/crud/settings.py
+		en "DATABASE" agregar lo siguiente:
+
+			DATABASES = {
+				'default': {
+					'ENGINE': 'django.db.backends.mysql',
+					'NAME': 'crud',
+					'USER': 'root',
+					'PASSWORD': 'root',
+					'HOST': 'localhost',  # Or an IP Address that your DB is hosted on
+					'PORT': 3305,
+
+				}
+			}
+
+			DATABASES = {
+				'default': {
+					'ENGINE': 'django.db.backends.mysql',
+					'NAME': 'work',
+					'USER': 'root',
+					'PASSWORD': '',
+					'HOST': 'localhost',  # Or an IP Address that your DB is hosted on
+					'PORT': 3306,
+                    'OPTIONS': {
+                        # Tell MySQLdb to connect with 'utf8mb4' character set
+                        'init_command': "SET sql_mode='STRICT_TRANS_TABLES'", 'charset':'utf8mb4'
+                        },
+                        # Tell Django to build the test database with the 'utf8mb4' character set
+                    'TEST': {
+                        'CHARSET':'utf8mb4',
+                        'COLLATION':'utf8mb4_unicode_ci',
+                    }
+				}
+			}
+
+15. crear la DB "crud" en MySQL
+16. (crud_django) D:\proyDjango>cd crud
+17. (crud_django) D:\proyDjango\crud>python manage.py makemigrations
+	::: se crea automaticamente la carpeta __pycache__
+18. (crud_django) D:\proyDjango\crud>python manage.py migrate
+	::: se crea las tablas en la bd automaticamente
+
+19. Crear en la ruta "../crud" una carpeta "apps"
+20. dentro de la carpeta crear un archivo "__init__.py"
+21  (crud_django) D:\proyDjango\crud>cd apps
+22. (crud_django) D:\proyDjango\crud\apps>django-admin startapp aplicacion
+	::: se crea automaticamente una carpeta con la estructura de la aplicacion
+23. en el archivo ..\crud\crud\settings.py  agregar 'apps.splicacion'
+				INSTALLED_APPS = [
+					'django.contrib.admin',
+					'django.contrib.auth',
+					'django.contrib.contenttypes',
+					'django.contrib.sessions',
+					'django.contrib.messages',
+					'django.contrib.staticfiles',
+					'apps.aplicacion',
+				]
+
+24. cambiar idioma "en-us" por "es-pe"
+	LANGUAGE_CODE = 'es-pe'
+
+
+25. dentro ..\crud\apps\aplicacion\models.py agregar
+
+		from django.db import models
+
+		# Create your models here.
+		class Persona(models.Model):
+			id = models.AutoField(primary_key = True)
+			nombre = models.CharField(max_length = 200)
+			apellidos = models.CharField(max_length = 200)
+			edad = models.IntegerField()
+			telefono = models.CharField(max_length =12)
+
+		class Mascota(models.Model):
+			id = models.AutoField(primary_key = True)
+			nombre = models.CharField(max_length = 150)
+			edad = models.IntegerField()
+			persona = models.ForeignKey(Persona, on_delete = models.CASCADE)
+
+
+26. (crud_django) D:\proyDjango\proyecto-3\crud\apps>cd..
+
+27. (crud_django) D:\proyDjango\proyecto-3\crud>python manage.py makemigrations
+		::::Resultado de la construccion del modelo
+			(crud_django) D:\proyDjango\proyecto-3\crud>python manage.py makemigrations
+			Migrations for 'aplicacion':
+			  apps\aplicacion\migrations\0001_initial.py
+				- Create model Persona
+				- Create model Mascota
+
+28. (crud_django) D:\proyDjango\proyecto-3\crud>python manage.py migrate
+		:::: Resultado de la creacion de tablas en la bd, según el modelo creado en "models.py"
+			(crud_django) D:\proyDjango\proyecto-3\crud>python manage.py migrate
+			Operations to perform:
+			  Apply all migrations: admin, aplicacion, auth, contenttypes, sessions
+			Running migrations:
+			  Applying aplicacion.0001_initial... OK
+
+29. dentro ..\crud\apps\aplicacion\admin.py agregar
+
+		from django.contrib import admin
+		from .models import *
+		# Register your models here.
+
+		admin.site.register(Persona)
+		admin.site.register(Mascota)
+
+30. (crud_django) D:\proyDjango\proyecto-3\crud>python manage.py createsuperuser
+		:::: crea un super usuario para acceder al portal del seridor local(localhost)
+		:::: agregar credenciales (nombre de usuario, directorio de email y password = "root12345")
+		Nombre de usuario (leave blank to use 'marman'): masteruser
+		Dirección de correo electrónico: masteruser@gmail.com
+		Password:
+		Password (again):
+
+		:::: resultado exitoso de la creacion
+		Superuser created successfully.
+
+31. (crud_django) D:\proyDjango\proyecto-3\crud>python manage.py runserver
+		:::: inicializar el servidor local(localhost)
+
+		Watching for file changes with StatReloader
+		Performing system checks...
+
+		System check identified no issues (0 silenced).
+		April 09, 2019 - 21:19:27
+		Django version 2.2, using settings 'crud.settings'
+		Starting development server at http://127.0.0.1:8000/
+		Quit the server with CTRL-BREAK.
+
+32. en el navegador web agregar la direccion local "http://127.0.0.1:8000/"
+
+33. luego agregar el navegador web http://127.0.0.1:8000/admin
+		:::: visualiza el login del administrador, luego agregar las credenciales del superusuario
+		:::: en la pestaña "aplicacion" visualiza los modulos "Persona y mascota", creada en el archivo admin.py
+
+34. dentro ..\crud\apps\aplicacion\ crear un archivo llamado "forms.py"
+		:::: dentro del archivo agregar
+
+		from django import forms
+		from .models import Mascota
+
+		class MascotaForm(forms.ModelForm):
+			class Meta:
+				model = Mascota
+				fields = [
+					'nombre',
+					'edad',
+					'persona',
+				]
+
+35. dentro ..\crud\apps\aplicacion\ crear un archivo llamado "views.py"
+		:::: dentro del archivo agregar
+
+		from django.shortcuts import render, redirect
+		from .models import *
+		from .forms import MascotaForm
+
+		# Create your views here.
+
+		def home(request):
+			return render(request,'index.html')
+
+		def crearMascota(request):
+			if request.method == 'POST':
+				form = MascotaForm(request.POST)
+				if form.is_valid():
+					form.save()
+					return redirect('index')
+			else:
+				form = MascotaForm()
+			return render(request,'aplicacion/crear_mascota.html', {'form':form})
+
+		def listarMascota(request):
+			mascota = Mascota.objects.all()
+			context = {'mascota':mascota}
+			return render(request, 'aplicacion/listar_mascota.html', context)
+
+		def editarMascota(request, id):
+			mascota = Mascota.objects.get(id = id)
+			if request.method == 'GET':
+				form = MascotaForm(instance = mascota)
+			else:
+				form = MascotaForm(request.POST, instance = mascota)
+				if form.is_valid:
+					form.save()
+				return redirect('index')
+			return render(request, 'aplicacion/crear_mascota.html',{'form':form})
+
+		 def eliminarMascota(request,id):
+			mascota = Mascota.objects.get(id = id)
+			if request.method == 'POST':
+				mascota.delete()
+				return redirect('index')
+			return render(request,'aplicacion/eliminar_mascota.html',{'mascota':mascota})
+
+
+36. dentro ..\crud\apps\aplicacion\ crear un archivo llamado "urls.py"
+		:::: dentro del archivo agregar
+
+		from django.conf.urls import url
+		from .views import *
+
+		urlpatterns = [
+			url(r'^$',home,name = "index"),
+			url(r'^crear_mascota/', crearMascota, name = "crear_mascota"),
+			url(r'^listar_mascota/', listarMascota, name = "listar_mascota"),
+			url(r'^editar_mascota/(?P<id>\d+)/$', editarMascota, name = "editar_mascota"),
+			url(r'^eliminar_mascota/(?P<id>\d+)/$', eliminarMascota, name = "eliminar_mascota"),
+		]
+
+
+
+37. en el archivo ..\crud\crud\urls.py
+		:::: reemplazar en en esta seccion con
+
+		from django.conf.urls import url, include
+		from django.contrib import admin
+
+
+		urlpatterns = [
+			url(r'^admin/', admin.site.urls),
+			url(r'^aplicacion/', include('apps.aplicacion.urls')),
+		]
+
+
+38. en el archivo ..\crud\crud\settings.py
+		:::: dentro del archivo en la seccion "TEMPLATES" agregar/modificar
+
+		'DIRS': [os.path.join(BASE_DIR, 'templates')],
+
+39. en la ruta ..\crud\  crear directorio llamado "templates"
+		:::: dentro del directorio "aplicacion" crear el  archivo "index.html"
+
+40. en la ruta ..\crud\templates\  crear directorio llamado "aplicacion"
+		:::: dentro del directorio "aplicacion" crear el  archivo "crear_mascota.html"
+
+41. en el archivo ..\crud\templates\aplicacion\index.html
+		:::: agregar lo siguiente
+
+		<!DOCTYPE html>
+		<html lang="en">
+		<head>
+			<meta charset="UTF-8">
+			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+			<meta http-equiv="X-UA-Compatible" content="ie=edge">
+			<title>Index</title>
+		</head>
+		<body>
+			<h1>Este es el indice</h1>
+
+		</body>
+		</html>
+
+42. en el archivo ..\crud\templates\aplicacion\crear_mascota.html
+		:::: agregar lo siguiente
+
+		<!DOCTYPE html>
+		<html lang="en">
+		<head>
+			<meta charset="UTF-8">
+			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+			<meta http-equiv="X-UA-Compatible" content="ie=edge">
+			<title>Crear Mascota</title>
+		</head>
+		<body>
+			<form action="" method="POST">
+				{% csrf_token %}
+				{{form.as_p}}
+				<button type="submit">Crear</button>
+			</form>
+		</body>
+		</html>
+
+43. poner en el navegador la direccion para comprobar
+		:::: http://127.0.0.1:8000/aplicacion/crear_mascota/
+		:::: agregar un elemento para comprobar luego en la bd
+
+44. en el archivo ..\crud\templates\aplicacion\listar_mascota.html
+		:::: agregar lo siguiente
+
+		<!DOCTYPE html>
+		<html lang="en" dir="ltr">
+		  <head>
+			<meta charset="UTF-8">
+			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+			<meta http-equiv="X-UA-Compatible" content="ie=edge">
+			<title>Listar Mascota</title>
+		  </head>
+		  <body>
+			<table border="2">
+			  <thead>
+				<tr>
+				  <td>ID</td>
+				  <td>Nombre</td>
+				  <td>Edad</td>
+				  <td>Apellido</td>
+				</tr>
+			  </thead>
+			  <tbody>
+				{% for mascota in mascota %}
+				<tr>
+				  <td>{{mascota.id}}</td>
+				  <td>{{mascota.nombre}}</td>
+				  <td>{{mascota.edad}}</td>
+				  <td>{{mascota.persona.nombre}}</td>
+				{% endfor %}
+				</tr>
+			  </tbody>
+			</table>
+
+		  </body>
+		</html>
+
+45. poner en el navegador la direccion para comprobar
+		:::: http://127.0.0.1:8000/aplicacion/listar_mascota/
+
+
+46. poner en el navegador la direccion para comprobar
+		:::: http://127.0.0.1:8000/aplicacion/editar_mascota/2/
+		:::: modificar datos, luego comprobar en la bd
+
+
+47. en el archivo ..\crud\templates\aplicacion\eliminar_mascota.html
+		:::: agregar lo siguiente
+
+		<!DOCTYPE html>
+		<html lang="en" dir="ltr">
+		  <head>
+			<meta charset="UTF-8">
+			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+			<meta http-equiv="X-UA-Compatible" content="ie=edge">
+			<title>Eliminar Mascota</title>
+		  </head>
+		  <body>
+			<form action="" method="post">
+			  {% csrf_token %}
+			  <h1>¿Estás seguro de eliminar el object {{ mascota.nombre }}</h1>
+			  <button type="submit">Eliminar</button>
+			  <button><a href="{% url 'index' %}">Cancelar</a></button>
+			</form>
+		  </body>
+		</html>
+
+48. poner en el navegador la direccion para comprobar
+		:::: http://127.0.0.1:8000/aplicacion/eliminar_mascota/3/
+		:::: elimina datos, luego comprobar en la bd
+
+############################################################################################
+############################################################################################
+#################  Otra forma de vista de datos por clases #################################
+############################################################################################
+
+
+01. dentro ..\crud\apps\aplicacion\ crear un archivo llamado "views.py"
+		:::: dentro del archivo agregar
+
+		from django.shortcuts import render, redirect
+		from .models import *
+		from .forms import MascotaForm
+		from django.views.generic import CreateView, UpdateView, ListView, DeleteView
+		from django.urls import reverse_lazy
+
+		# Create your views here.
+
+		def home(request):
+			return render(request,'index.html')
+
+		class CreateMascota(CreateView):
+			model = Mascota
+			form_class = MascotaForm
+			template_name = 'aplicacion/crear_mascota.html'
+			success_url = reverse_lazy('index')
+
+		class ListMascota(ListView):
+			model = Mascota
+			template_name = 'aplicacion/listar_mascota.html'
+
+		class UpdateMascota(UpdateView):
+			model = Mascota
+			form_class = MascotaForm
+			template_name = 'aplicacion/crear_mascota.html'
+			success_url = reverse_lazy('index')
+
+		class DeleteMascota(DeleteView):
+			model = Mascota
+			template_name = 'aplicacion/eliminar_mascota.html'
+			success_url = reverse_lazy('index')
+
+
+
+02. dentro ..\crud\apps\aplicacion\ crear un archivo llamado "urls.py"
+		:::: dentro del archivo agregar
+
+		from django.conf.urls import url
+		from .views import *
+
+		urlpatterns = [
+			url(r'^$',home,name = "index"),
+			url(r'^crear_mascota/', CreateMascota.as_view(), name = "crear_mascota"),
+			url(r'^listar_mascota/', ListMascota.as_view(), name = "listar_mascota"),
+			url(r'^editar_mascota/(?P<pk>\d+)/$', UpdateMascota.as_view(), name = "editar_mascota"),
+			url(r'^eliminar_mascota/(?P<pk>\d+)/$', DeleteMascota.as_view(), name = "eliminar_mascota"),
+		]
+
+
+
+
+03. en el archivo ..\crud\templates\aplicacion\listar_mascota.html
+		:::: agregar lo siguiente
+
+		<!DOCTYPE html>
+		<html lang="en" dir="ltr">
+		  <head>
+			<meta charset="UTF-8">
+			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+			<meta http-equiv="X-UA-Compatible" content="ie=edge">
+			<title>Listar Mascota</title>
+		  </head>
+		  <body>
+			<table border="2">
+			  <thead>
+				<tr>
+				  <td>ID</td>
+				  <td>Nombre</td>
+				  <td>Edad</td>
+				  <td>Apellido</td>
+				</tr>
+			  </thead>
+			  <tbody>
+				{% for mascota in object_list %}
+				<tr>
+				  <td>{{mascota.id}}</td>
+				  <td>{{mascota.nombre}}</td>
+				  <td>{{mascota.edad}}</td>
+				  <td>{{mascota.persona.nombre}}</td>
+				{% endfor %}
+				</tr>
+			  </tbody>
+			</table>
+
+		  </body>
+		</html>
+
+
+04. en el archivo ..\crud\templates\aplicacion\eliminar_mascota.html
+		:::: agregar lo siguiente
+
+		<!DOCTYPE html>
+		<html lang="en" dir="ltr">
+		  <head>
+			<meta charset="UTF-8">
+			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+			<meta http-equiv="X-UA-Compatible" content="ie=edge">
+			<title>Eliminar Mascota</title>
+		  </head>
+		  <body>
+			<form action="" method="post">
+			  {% csrf_token %}
+			  <h1>¿Estás seguro de eliminar el object {{ object.nombre }}</h1>
+			  <button type="submit">Eliminar</button>
+			  <button><a href="{% url 'index' %}">Cancelar</a></button>
+			</form>
+		  </body>
+		</html>
+
+05. poner en el navegador la direccion para comprobar
+		http://127.0.0.1:8000/aplicacion/crear_mascota/
+
+06. poner en el navegador la direccion para comprobar
+		http://127.0.0.1:8000/aplicacion/listar_mascota/
+
+07. poner en el navegador la direccion para comprobar
+		http://127.0.0.1:8000/aplicacion/editar_mascota/3/
+
+08. poner en el navegador la direccion para comprobar
+		http://127.0.0.1:8000/aplicacion/eliminar_mascota/3/
+
+
+
+############################################################################################
+############################################################################################
+###################  otra forma de visualizacion e los datos ###############################
+############################################################################################
+
+
+01. dentro ..\crud\apps\aplicacion\models.py debajo de "class Persona" y "class Mascota" agregar
+
+		from django.db import models
+
+		# Create your models here.
+		class Persona(models.Model):
+			id = models.AutoField(primary_key = True)
+			nombre = models.CharField(max_length = 200)
+			apellidos = models.CharField(max_length = 200)
+			edad = models.IntegerField()
+			telefono = models.CharField(max_length =12)
+
+			def __str__(self):
+				return self.nombre
+
+
+		class Mascota(models.Model):
+			id = models.AutoField(primary_key = True)
+			nombre = models.CharField(max_length = 150)
+			edad = models.IntegerField()
+			persona = models.ForeignKey(Persona, on_delete = models.CASCADE)
+
+			def __str__(self):
+				return self.nombre
+
+
+02. en el archivo ..\crud\templates\aplicacion\listar_mascota.html
+		:::: reemplazar lo siguiente
+		:::: esto <td>{{mascota.persona.nombre}}</td>
+		:::: por <td>{{mascota.persona}}</td>
+===============================================================================
